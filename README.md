@@ -1,6 +1,6 @@
 # Churn Modelling - Salima Charles Emeric
 
-
+`python churn/application/main.py`
 
 ## Getting started
 
