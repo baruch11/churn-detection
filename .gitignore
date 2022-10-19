@@ -1,8 +1,2 @@
 .ipynb_checkpoints
 /data/
-Churn.egg-info/*
-churn_env*
-__init__*
-Churn/*
-.python*
-dist/*
