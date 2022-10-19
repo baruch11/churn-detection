@@ -5,5 +5,4 @@ churn_env*
 __init__*
 Churn/*
 .python*
-*.pyc
 dist/*
