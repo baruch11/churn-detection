@@ -2,6 +2,12 @@
 
 `python churn/application/main.py`
 
+## Launch code :
+<code>cd /path/to/churn-modeling-salima-charles-emeric</code>
+<code>. activate.sh</code>
+<code>python3 churn/application/main.py</code>
+
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
