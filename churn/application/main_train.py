@@ -12,8 +12,8 @@ PARSER.add_argument('--indicators_csv', '-i', type=str,
                     help='indicators csv file name')
 PARSER.add_argument('--customers_csv', '-c', type=str,
                     help='customers csv file name')
-PARSER.add_argument('--output_csv', '-o', type=str,
-                    help='output training csv file name')
+PARSER.add_argument('--outputmodelfile_csv', '-o', type=str,
+                    help='output parameters csv file name')
 
 
 args = PARSER.parse_args()
@@ -25,6 +25,6 @@ raw_data = bcd.load_data()
 
 #training du modèle à partir de la classe DummyChurnModel
 # du module /domain/churn_model.py
-model = DummyChurnModel().load()
+model = DummyChurnModel()
 parameters = model.fit(raw_data)
-parameters.to_csv(args.output_csv)
+parameters.to_csv(args.outputmodelfile_csv)
