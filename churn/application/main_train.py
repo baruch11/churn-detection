@@ -1,4 +1,5 @@
 """Compute training from a csv file"""
+
 import argparse
 #from abc import ABC, ABCMeta, abstractmethod
 from churn.domain.churn_model import DummyChurnModel
