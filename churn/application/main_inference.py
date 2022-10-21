@@ -1,6 +1,9 @@
 """Compute inferences from a csv file"""
 import argparse
 import logging
+import sys; print(sys.path)
+
+logging.getLogger().setLevel(logging.INFO)
 
 from churn.infrastructure.bank_customers import BankCustomersData
 from churn.domain.churn_model import DummyChurnModel
@@ -21,7 +24,6 @@ logging.info("Compute inferences for input files %s and %s",
 
 bcd = BankCustomersData(args.indicators_csv, args.customers_csv)
 raw_data = bcd.load_data()
-
 
 model = DummyChurnModel.load()
 predictions = model.predict(raw_data)
