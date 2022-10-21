@@ -23,7 +23,7 @@ PARSER.add_argument('--debug', '-d', action='store_true',
 
 args = PARSER.parse_args()
 
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 if args.debug:
     logging.getLogger().setLevel(logging.DEBUG)
 
