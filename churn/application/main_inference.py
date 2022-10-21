@@ -23,7 +23,7 @@ bcd = BankCustomersData(args.indicators_csv, args.customers_csv)
 raw_data = bcd.load_data()
 
 
-model = DummyChurnModel().load()
+model = DummyChurnModel.load()
 predictions = model.predict(raw_data)
 
 predictions.to_csv(args.output_csv)
