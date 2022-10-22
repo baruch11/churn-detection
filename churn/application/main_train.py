@@ -8,7 +8,7 @@ from churn.infrastructure.bank_customers import BankCustomersData
 
 PARSER = argparse.ArgumentParser(
     description='Compute training from a csv file')
-PARSER.add_argument('--indicators_csv', '-i', type=str,
+PARSER.add_argument('--indicators_csv', '-i', type=str, 
                     help='indicators csv file name')
 PARSER.add_argument('--customers_csv', '-c', type=str,
                     help='customers csv file name')
@@ -28,4 +28,5 @@ X_train, X_test, y_train, y_test = train_test_split(raw_data.drop(columns=["CHUR
 # du module /domain/churn_model.py
 model = DummyChurnModel()
 model.fit(X_train, y_train)
+print(model.score(X_test, y_test))
 model.save()
