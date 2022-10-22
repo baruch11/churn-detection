@@ -2,8 +2,9 @@
 
 import argparse
 from sklearn.model_selection import train_test_split
-from churn.domain.churn_model import DummyChurnModel
-from churn.infrastructure.bank_customers import BankCustomersData
+from sklearn.metrics import jaccard_score, f1_score
+from churn.domain.churn_model import DummyChurnModel 
+from churn.infrastructure.bank_customers import BankCustomersData 
 
 
 PARSER = argparse.ArgumentParser(
@@ -23,10 +24,20 @@ raw_data = bcd.load_data()
 
 X_train, X_test, y_train, y_test = train_test_split(raw_data.drop(columns=["CHURN"]), raw_data["CHURN"], test_size=0.20, random_state=33)
 
-
 #training du modèle à partir de la classe DummyChurnModel
 # du module /domain/churn_model.py
 model = DummyChurnModel()
 model.fit(X_train, y_train)
-print(model.score(X_test, y_test))
+y_pred_test = model.predict(X_test)
+y_pred_train = model.predict(X_train)
+
+#In binary classification, accuracy score is equal to the jaccard_score function
+print("Jaccard score on test set", jaccard_score(y_test, y_pred_test))
+print("Jaccard score on train set", jaccard_score(y_train, y_pred_train))
+
+#F1 score
+print("F1 score on test set", f1_score(y_test, y_pred_test))
+print("F1 score on train set", f1_score(y_train, y_pred_train))
+
+
 model.save()
