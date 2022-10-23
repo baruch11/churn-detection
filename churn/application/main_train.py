@@ -2,7 +2,7 @@
 
 import argparse
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import jaccard_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score
 from churn.domain.churn_model import DummyChurnModel 
 from churn.infrastructure.bank_customers import BankCustomersData 
 
@@ -31,9 +31,9 @@ model.fit(X_train, y_train)
 y_pred_test = model.predict(X_test)
 y_pred_train = model.predict(X_train)
 
-#In binary classification, accuracy score is equal to the jaccard_score function
-print("Jaccard score on test set", jaccard_score(y_test, y_pred_test))
-print("Jaccard score on train set", jaccard_score(y_train, y_pred_train))
+#Accuracy score
+print("Accuracy on test set", accuracy_score(y_test, y_pred_test))
+print("Accuracy on train set", accuracy_score(y_train, y_pred_train))
 
 #F1 score
 print("F1 score on test set", f1_score(y_test, y_pred_test))
