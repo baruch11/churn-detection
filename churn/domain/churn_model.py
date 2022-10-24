@@ -94,9 +94,8 @@ class ChurnModelFinal(BaseChurnModel):
         )
 
 class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
-    def __init__(self,pipeline : Pipeline, balance_imputation = "drop"):
+    def __init__(self,pipeline : Pipeline):
         self.pipeline = pipeline
-        self.balance_imputation = balance_imputation
     def fit(self,X : pd.DataFrame, y : pd.DataFrame):
 
         """Build the models of the given pipeline from the training set (X, y).
@@ -121,6 +120,6 @@ class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
         score = self.pipeline.score(X,y)
         return  score
     def predict(self,X):
-        self.pipeline.predict(X)
+        y_hat = self.pipeline.predict(X)
         #check_is_fitted(self)
-        return X
+        return y_hat
