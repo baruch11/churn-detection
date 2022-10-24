@@ -1,15 +1,17 @@
 """Compute training from a csv file"""
 
 import argparse
+import os
+
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
-from churn.domain.churn_model import DummyChurnModel 
-from churn.infrastructure.bank_customers import BankCustomersData 
+from churn.domain.churn_model import ChurnModelFinal
+from churn.infrastructure.bank_customers import BankCustomersData
 
 
 PARSER = argparse.ArgumentParser(
     description='Compute training from a csv file')
-PARSER.add_argument('--indicators_csv', '-i', type=str, 
+PARSER.add_argument('--indicators_csv', '-i', type=str,
                     help='indicators csv file name')
 PARSER.add_argument('--customers_csv', '-c', type=str,
                     help='customers csv file name')
@@ -26,7 +28,7 @@ X_train, X_test, y_train, y_test = train_test_split(raw_data.drop(columns=["CHUR
 
 #training du modèle à partir de la classe DummyChurnModel
 # du module /domain/churn_model.py
-model = DummyChurnModel()
+model = ChurnModelFinal()
 model.fit(X_train, y_train)
 y_pred_test = model.predict(X_test)
 y_pred_train = model.predict(X_train)

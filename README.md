@@ -8,6 +8,10 @@
 <code>python3 churn/application/main.py</code>
 
 
+## Launch unit tests
+<code>pytest<code>
+
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.

@@ -1,16 +1,20 @@
 """This module compute features for churn detection"""
-import pandas as pd
 from dataclasses import dataclass
+import pandas as pd
 
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.base import TransformerMixin
 
 @dataclass
-class FeaturesDataset:
+class FeaturesDataset(TransformerMixin):
     """This class represents the features of the churn modelling."""
     features: pd.DataFrame = None
     balance_imputation: str = "median"
 
-    def compute_features(self, raw_data) -> pd.DataFrame:
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, raw_data, y=None) -> pd.DataFrame:
         """Compute features for churn detection.
         Args:
             raw_data (pd.DataFrame): output of BankCustomersData.load_data()
@@ -19,7 +23,7 @@ class FeaturesDataset:
                                 .assign(NUM_DAYS=raw_data.DATE_ENTREE.apply(
                                     lambda x: (raw_data.DATE_ENTREE.max()-x).days))\
                                 .assign(DAY_OF_YEAR=raw_data.DATE_ENTREE.dt.dayofyear)\
-                                .drop(columns=["DATE_ENTREE"]).dropna()
+                                .drop(columns=["DATE_ENTREE"]).fillna(0)
         #FIXME dropna
         self._balance_imputation()
         self._encode_lands()
