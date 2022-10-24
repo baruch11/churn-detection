@@ -1,10 +1,16 @@
 import os
 from abc import ABC, ABCMeta, abstractmethod
+from tkinter import Y
+from typing import Dict
 from xmlrpc.client import Boolean
 import pandas as pd
 from sklearn.pipeline import Pipeline
 import pickle
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LinearRegression
+from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.base import BaseEstimator, ClassifierMixin
+from churn.domain.bank_customers_dataset import FeaturesDataset
 
 class BaseChurnModel(metaclass=ABCMeta):
     """
@@ -63,3 +69,34 @@ class DummyChurnModel(BaseChurnModel):
 
     def _feature_engineering(self, X):
         return X[["AGE"]]
+
+
+class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
+    def __init__(self,pipeline : Pipeline, balance_imputation = "drop"):
+        self.pipeline = pipeline
+        self.balance_imputation = balance_imputation
+    def fit(self,X : pd.DataFrame, y : pd.DataFrame):
+        """Build the models of the given pipeline from the training set (X, y).
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples taken from raw data (infrastructure output).
+
+        y : array-like of shape (n_samples,) or (n_samples, n_outputs)
+            The target values (class labels) as integers or strings.
+        """
+
+        #fds = FeaturesDataset(balance_imputation=self.balance_imputation)
+        #X,y = fds.compute_features(X),fds.compute_features(y)
+        self.pipeline.fit(X,y)
+        #X, y = check_X_y(X, y, accept_sparse=True)
+        #X, y = check_X_y(X, y)
+        return self
+    def score(self,X,y):
+        score = self.pipeline.score(X,y)
+        return  score
+    def predict(self,X):
+        self.pipeline.predict(X)
+        #check_is_fitted(self)
+        return X
