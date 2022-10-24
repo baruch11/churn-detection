@@ -4,9 +4,10 @@ import pandas as pd
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.base import TransformerMixin
+from sklearn.base import BaseEstimator
 
 @dataclass
-class FeaturesDataset(TransformerMixin):
+class FeaturesDataset(TransformerMixin,BaseEstimator):
     """This class represents the features of the churn modelling."""
     features: pd.DataFrame = None
     balance_imputation: str = "median"
