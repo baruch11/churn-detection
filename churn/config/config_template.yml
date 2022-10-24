@@ -1,5 +1,6 @@
 data:
   customers_dataset: "data/1_-_customers.csv"
   indicators_dataset: "data/1_-_indicators.csv"
+
 inferences_output_file: data/predictions.csv
   
