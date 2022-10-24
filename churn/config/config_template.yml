@@ -3,4 +3,11 @@ data:
   indicators_dataset: "data/1_-_indicators.csv"
 
 inferences_output_file: data/predictions.csv
-  
+model:
+  grid_search_params:
+   - pipeline__classifier: ["SVC()"]
+     pipeline__classifier__C: [.1,.5]
+     pipeline__features__balance_imputation: ['none','median']
+   - pipeline__classifier: ["DecisionTreeClassifier()"]
+     pipeline__classifier__criterion: ["gini", "entropy"]
+     pipeline__features__balance_imputation: ['none','median']
