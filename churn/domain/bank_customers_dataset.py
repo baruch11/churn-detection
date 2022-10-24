@@ -23,7 +23,7 @@ class FeaturesDataset(TransformerMixin):
                                 .assign(NUM_DAYS=raw_data.DATE_ENTREE.apply(
                                     lambda x: (raw_data.DATE_ENTREE.max()-x).days))\
                                 .assign(DAY_OF_YEAR=raw_data.DATE_ENTREE.dt.dayofyear)\
-                                .drop(columns=["DATE_ENTREE"]).dropna()
+                                .drop(columns=["DATE_ENTREE"]).fillna(0)
         #FIXME dropna
         self._balance_imputation()
         self._encode_lands()

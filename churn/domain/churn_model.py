@@ -5,6 +5,10 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 import pickle
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.pipeline import Pipeline
+
+from churn.domain.bank_customers_dataset import FeaturesDataset
+
 
 class BaseChurnModel(metaclass=ABCMeta):
     """
@@ -63,3 +67,33 @@ class DummyChurnModel(BaseChurnModel):
 
     def _feature_engineering(self, X):
         return X[["AGE"]]
+
+
+class ChurnModelFinal(BaseChurnModel):
+
+    def __init__(self, _max_depth=5):
+        self.pipe = Pipeline([
+            ('features', FeaturesDataset()),
+            ('clf', DecisionTreeClassifier(max_depth=_max_depth))
+        ])
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        """Build the models of the given pipeline from the training set (X, y).
+
+        Parameters
+        ----------
+        X : {array-like, sparse matrix} of shape (n_samples, n_features)
+            The training input samples taken from raw data (infrastructure output).
+
+        y : array-like of shape (n_samples,) or (n_samples, n_outputs)
+            The target values (class labels) as integers or strings.
+        """
+        self.pipe.fit(X, y)
+
+    def predict(self, X: pd.DataFrame):
+        return pd.Series(
+            self.pipe.predict(X),
+            index = X.index
+        )
+
+

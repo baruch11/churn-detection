@@ -8,7 +8,7 @@ import yaml
 
 
 from churn.infrastructure.bank_customers import BankCustomersData
-from churn.domain.churn_model import DummyChurnModel
+from churn.domain.churn_model import ChurnModelFinal
 
 ROOTDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 
@@ -39,9 +39,9 @@ logging.info("Compute inferences for input files %s and %s",
              indicators_csv, customers_csv)
 
 bcd = BankCustomersData(indicators_csv, customers_csv)
-raw_data = bcd.load_data()
+raw_data = bcd.load_data().drop(columns=["CHURN"])
 
-model = DummyChurnModel.load()
+model = ChurnModelFinal.load()
 predictions = model.predict(raw_data)
 
 output_csv = cfg_dict["inferences_output_file"]
