@@ -33,7 +33,7 @@ class FeaturesDataset(TransformerMixin,BaseEstimator):
 
     def _balance_imputation(self):
         """impute value in zero in balance """
-        assert self.balance_imputation in {"median", "mean", "none", "drop"}
+        assert self.balance_imputation in {"median", "mean", "none"}
         zeros_pos = self.features.BALANCE == 0
 
         imput_value = self.features.loc[~zeros_pos, "BALANCE"].median()
@@ -42,9 +42,6 @@ class FeaturesDataset(TransformerMixin,BaseEstimator):
 
         if self.balance_imputation != "none":
             self.features.loc[zeros_pos, "BALANCE"] = imput_value
-
-        if self.balance_imputation == "drop":
-            self.features = self.features.loc[~zeros_pos]
 
 
     def _encode_lands(self):
