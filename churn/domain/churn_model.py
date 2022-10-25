@@ -8,6 +8,10 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.pipeline import Pipeline
 
 from churn.domain.bank_customers_dataset import FeaturesDataset
+from sklearn.linear_model import LinearRegression
+from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
+from sklearn.base import BaseEstimator, ClassifierMixin
+from churn.domain.bank_customers_dataset import FeaturesDataset
 
 
 class BaseChurnModel(metaclass=ABCMeta):
@@ -69,6 +73,7 @@ class DummyChurnModel(BaseChurnModel):
         return X[["AGE"]]
 
 
+
 class ChurnModelFinal(BaseChurnModel):
 
     def __init__(self, _max_depth=5):
@@ -78,6 +83,19 @@ class ChurnModelFinal(BaseChurnModel):
         ])
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.pipe.fit(X, y)
+
+    def predict(self, X: pd.DataFrame):
+        return pd.Series(
+            self.pipe.predict(X),
+            index = X.index
+        )
+
+class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
+    def __init__(self,pipeline : Pipeline):
+        self.pipeline = pipeline
+    def fit(self,X : pd.DataFrame, y : pd.DataFrame):
+
         """Build the models of the given pipeline from the training set (X, y).
 
         Parameters
@@ -88,12 +106,18 @@ class ChurnModelFinal(BaseChurnModel):
         y : array-like of shape (n_samples,) or (n_samples, n_outputs)
             The target values (class labels) as integers or strings.
         """
-        self.pipe.fit(X, y)
-
-    def predict(self, X: pd.DataFrame):
-        return pd.Series(
-            self.pipe.predict(X),
-            index = X.index
-        )
 
 
+        #fds = FeaturesDataset(balance_imputation=self.balance_imputation)
+        #X,y = fds.compute_features(X),fds.compute_features(y)
+        self.pipeline.fit(X,y)
+        #X, y = check_X_y(X, y, accept_sparse=True)
+        #X, y = check_X_y(X, y)
+        return self
+    def score(self,X,y):
+        score = self.pipeline.score(X,y)
+        return  score
+    def predict(self,X):
+        y_hat = self.pipeline.predict(X)
+        #check_is_fitted(self)
+        return y_hat
