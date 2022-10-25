@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from churn.domain.churn_model import ChurnModelSelection
-from churn.infrastructure.bank_customers import BankCustomersData
+from churn.domain.domain_utils import get_train_test_split
 from churn.domain.bank_customers_dataset import FeaturesDataset
 from churn.config.config import read_yaml
 
@@ -28,11 +28,7 @@ first_grid_params = CONFIG_MODEL_PARAMETERS[0]
 #CONFIG_MODEL_PARAMETERS[1]["pipeline__classifier"][0] = MODELS_MAPPING_DICT[CONFIG_MODEL_PARAMETERS[1]["pipeline__classifier"][0]]
 
 
-
-bcd = BankCustomersData(CONFIG_DATA_INDICATORS, CONFIG_DATA_CUSTOMERS)
-raw_data = bcd.load_data()
-
-X_train, X_test, y_train, y_test = train_test_split(raw_data.drop(columns=["CHURN"]), raw_data["CHURN"], test_size=0.20, random_state=33)
+X_train, X_test, y_train, y_test = get_train_test_split()
 model = ChurnModelSelection(pipeline=Pipeline([('features', FeaturesDataset()), ('classifier', first_estimator)]))
 clf = GridSearchCV(model, first_grid_params)
 clf.fit(X_train,y_train)
