@@ -11,6 +11,8 @@ from churn.domain.bank_customers_dataset import FeaturesDataset
 from sklearn.linear_model import LinearRegression
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.metrics import (accuracy_score, f1_score, recall_score,
+                             precision_score)
 from churn.domain.bank_customers_dataset import FeaturesDataset
 
 
@@ -42,6 +44,35 @@ class BaseChurnModel(metaclass=ABCMeta):
     def _get_pickle_path(self):
         return os.path.join(
             self.PICKLE_ROOT, self.__class__.__name__)+".pkl"
+
+    def score_details(self, X_test, y_test):
+        """Return a dataframe with multiple metrics on several subsets
+        Returns
+        -------
+           pd.Dataframe: columns: metrics, index: subsets
+        """
+        m_test = pd.concat([X_test,
+                            self.predict(X_test).rename("pred"),
+                            y_test], axis=1)
+
+        def _my_scores(df):
+            metrics = [accuracy_score, f1_score, precision_score, recall_score]
+            ret = {metric.__name__: metric(df.CHURN, df.pred)
+                   for metric in metrics}
+            return pd.Series(ret)
+
+        scores_pays = m_test.groupby("PAYS").apply(_my_scores)
+
+        balance0 = (X_test.BALANCE == 0)
+        scores_balance = m_test.groupby(balance0)\
+                               .apply(_my_scores)\
+                               .rename(index={True: "balance = 0",
+                                              False: "balance > 0"})
+        score_total = pd.DataFrame(
+            [_my_scores(m_test).to_dict()]).rename(index={0: "global"})
+
+        return pd.concat([score_total, scores_pays, scores_balance])
+
 
 
 class DummyChurnModel(BaseChurnModel):

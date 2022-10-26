@@ -32,4 +32,7 @@ print("F1 score on test set", f1_score(y_test, y_pred_test))
 print("F1 score on train set", f1_score(y_train, y_pred_train))
 
 
+print(f"score details on test set:\n{model.score_details(X_test, y_test)}")
+
 model.save()
+
