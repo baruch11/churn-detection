@@ -1,9 +1,10 @@
 """functions related to domain"""
+import opcode
 import os
+from turtle import right
 import yaml
 
 from sklearn.model_selection import train_test_split
-
 from churn.infrastructure.bank_customers import BankCustomersData
 
 
@@ -40,3 +41,21 @@ def get_train_test_split():
         random_state=33)
 
     return X_train, X_test, y_train, y_test
+
+def return_models_from_all_model_params(all_models_param):
+    """ Return all models for a list of param grid"""
+    all_models = list()
+    for model in all_models_param:
+        all_models.append(model['pipeline__classifier'][0])
+    return all_models
+
+def find_model_params_from_model_name(all_models_param,model_name):
+    """Find specific model param from the model name."""
+    right_model_params = None
+    for model_parameters in all_models_param:
+        classifier = model_parameters["pipeline__classifier"][0]
+        if f"{classifier.__class__.__name__}()" == model_name :
+            right_model_params = model_parameters
+    if right_model_params is None:
+        raise Exception("No model matches your search")  
+    return right_model_params
