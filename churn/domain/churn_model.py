@@ -137,8 +137,8 @@ class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
         y : array-like of shape (n_samples,) or (n_samples, n_outputs)
             The target values (class labels) as integers or strings.
         """
-
-
+        print(f"Pipeline Get params : {self.pipeline. get_params(deep=True)}")
+        
         #fds = FeaturesDataset(balance_imputation=self.balance_imputation)
         #X,y = fds.compute_features(X),fds.compute_features(y)
         self.pipeline.fit(X,y)

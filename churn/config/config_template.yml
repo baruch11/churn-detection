@@ -6,8 +6,11 @@ inferences_output_file: data/predictions.csv
 model:
   grid_search_params:
    - pipeline__classifier: ["SVC()"]
-     pipeline__classifier__C: [.1,.5]
-     pipeline__features__balance_imputation: ['none','median']
+     pipeline__classifier__C: !!python/tuple [0.000001, 1000000.0, 'log-uniform']
+     pipeline__classifier__gamma: !!python/tuple [0.000001, 10.0, 'log-uniform']
+     pipeline__classifier__degree: !!python/tuple [1,8]
+     pipeline__classifier__kernel: ['linear', 'poly', 'rbf']
+     #pipeline__features__balance_imputation: ['none','median']
    - pipeline__classifier: ["DecisionTreeClassifier()"]
      pipeline__classifier__criterion: ["gini", "entropy"]
      pipeline__features__balance_imputation: ['none','median']
