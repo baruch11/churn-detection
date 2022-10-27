@@ -5,8 +5,21 @@
 ## Launch code :
 <code>cd /path/to/churn-modeling-salima-charles-emeric</code>
 <code>. activate.sh</code>
-<code>python3 churn/application/main.py</code>
+<code>python3 churn/application/main_train.py</code>
 
+## Optimization process :
+All informations with 
+<code>python3 churn/application/main_optimize.py -h</code>
+Options are : -models, -GridSearchModel, -n_iter.
+
+### Find the best model :
+<code>python3 churn/application/main_optimize.py -m</code>
+Return scores of each of the model with default params
+
+### Find best params for a specific model :
+<code>python3 churn/application/main_optimize.py -g "SVC() -n 10"</code>
+Return score and best params for the trained and test model
+Save the config automatically. 
 
 ## Launch unit tests
 <code>pytest<code>
