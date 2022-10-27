@@ -29,8 +29,12 @@ def get_train_test_split():
     with open(param_file, "r", encoding="utf-8") as fparam:
         cfg_dict = yaml.load(fparam, Loader=yaml.FullLoader)
 
-    bcd = BankCustomersData(cfg_dict["data"]["indicators_dataset"],
-                            cfg_dict["data"]["customers_dataset"])
+    indicators_path = os.path.join(get_rootdir(),
+                                   cfg_dict["data"]["indicators_dataset"])
+    customers_path = os.path.join(get_rootdir(),
+                                  cfg_dict["data"]["customers_dataset"])
+
+    bcd = BankCustomersData(indicators_path, customers_path)
     raw_data = bcd.load_data()
 
     X_train, X_test, y_train, y_test = train_test_split(
