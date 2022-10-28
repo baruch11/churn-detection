@@ -16,7 +16,8 @@ ROOTDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 PARSER = argparse.ArgumentParser(
     description='Compute inferences from a csv file')
 PARSER.add_argument('--params', '-p', type=str,
-                    default=os.path.join(ROOTDIR, "churn/config/config_template.yml"),
+                    default=os.path.join(ROOTDIR,
+                                         "churn/config/inference_template.yml"),
                     help="path to the parameters yaml file")
 PARSER.add_argument('--debug', '-d', action='store_true',
                     help='activate debug logs')
@@ -39,7 +40,7 @@ logging.info("Compute inferences for input files %s and %s",
              indicators_csv, customers_csv)
 
 bcd = BankCustomersData(indicators_csv, customers_csv)
-raw_data = bcd.load_data().drop(columns=["CHURN"])
+raw_data = bcd.load_data()
 
 model = ChurnModelFinal.load()
 predictions = model.predict(raw_data)
