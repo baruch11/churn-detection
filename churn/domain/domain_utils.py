@@ -46,14 +46,14 @@ def get_train_test_split():
 
     return X_train, X_test, y_train, y_test
 
-def return_models_from_all_model_params(all_models_param):
+def return_models_from_all_model_params(all_models_param : dict) -> list:
     """ Return all models for a list of param grid"""
     all_models = list()
     for model in all_models_param:
         all_models.append(model['pipe__classifier'][0])
     return all_models
 
-def find_model_params_from_model_name(all_models_param,model_name):
+def find_model_params_from_model_name(all_models_param : dict,model_name : str) -> dict:
     """Find specific model param from the model name."""
     right_model_params = None
     for model_parameters in all_models_param:
