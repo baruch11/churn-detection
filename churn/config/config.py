@@ -1,8 +1,22 @@
 from typing import Dict
 import yaml
 import os
-from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.neural_network import MLPClassifier
 from interpret.glassbox import ExplainableBoostingClassifier
+
+
+MODELS_MAPPING_DICT={
+    "SVC()" : SVC(),
+    "DecisionTreeClassifier()" : DecisionTreeClassifier(),
+    "RandomForestClassifier()" : RandomForestClassifier(),
+    "MLPClassifier()" : MLPClassifier(),
+    "GradientBoostingClassifier()" : GradientBoostingClassifier(),
+    "ExplainableBoostingClassifier()" : ExplainableBoostingClassifier()
+}
+
 
 def read_yaml(path: os.path) -> dict:
     """Returns YAML file as dict"""
@@ -11,7 +25,7 @@ def read_yaml(path: os.path) -> dict:
     return config
 
 
-def transform_to_object(file_path : os.path, path_of_models : str ,mapping_dict : Dict):
+def transform_to_object(file_path : os.path, path_of_models : str ,mapping_dict : Dict = MODELS_MAPPING_DICT):
     """
     This function transform models name from string to class. 
     Ex : from "SVC()" to sklearn.SVC() """
@@ -27,7 +41,7 @@ def transform_to_object(file_path : os.path, path_of_models : str ,mapping_dict 
         model_list.append(model)
     return model_list
 
-def save_best_params_to_yaml (path : str ,best_params : tuple,model_name : str):
+def save_best_params_to_yaml (path : str ,best_params : tuple,model_name : str) -> bool:
     """This function save the result of a Bayesian search into a special file used by the train model. """
     model_to_save = dict()
     model_to_save["pipe__classifier"] = [model_name]
