@@ -11,7 +11,6 @@ from churn.config.config import read_yaml, transform_to_object, save_best_params
 from churn.domain.domain_utils import get_train_test_split
 from churn.infrastructure.bank_customers import BankCustomersData
 ROOTDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
-#TODO : put it in config.py file
 CONFIG = read_yaml(os.path.join(ROOTDIR, "churn/config/config_template.yml"))
 CONFIG_DATA_INDICATORS = CONFIG["data"]["indicators_dataset"]
 CONFIG_DATA_CUSTOMERS = CONFIG["data"]["customers_dataset"]
