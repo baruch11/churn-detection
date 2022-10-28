@@ -46,14 +46,14 @@ def return_models_from_all_model_params(all_models_param):
     """ Return all models for a list of param grid"""
     all_models = list()
     for model in all_models_param:
-        all_models.append(model['pipeline__classifier'][0])
+        all_models.append(model['pipe__classifier'][0])
     return all_models
 
 def find_model_params_from_model_name(all_models_param,model_name):
     """Find specific model param from the model name."""
     right_model_params = None
     for model_parameters in all_models_param:
-        classifier = model_parameters["pipeline__classifier"][0]
+        classifier = model_parameters["pipe__classifier"][0]
         if f"{classifier.__class__.__name__}()" == model_name :
             right_model_params = model_parameters
     if right_model_params is None:
