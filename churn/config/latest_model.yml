@@ -1,0 +1,8 @@
+model_parameters:
+- pipeline__classifier:
+  - ExplainableBoostingClassifier()
+  pipeline__classifier__binning: quantile_humanized
+  pipeline__classifier__early_stopping_tolerance: 0.06289324408100383
+  pipeline__classifier__learning_rate: 0.02140765964038173
+  pipeline__classifier__min_samples_leaf: 7
+  pipeline__classifier__outer_bags: 5
