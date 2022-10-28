@@ -1,0 +1,5 @@
+data:
+  customers_dataset: "data/inference_test_customers.csv"
+  indicators_dataset: "data/inference_test_indicators.csv"
+
+inferences_output_file: data/predictions.csv

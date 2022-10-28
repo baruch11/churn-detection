@@ -1,4 +1,4 @@
-"""This module loads bank customers data from diffrent files."""
+"""This module loads bank customers data from different files."""
 
 from dataclasses import dataclass
 import pandas as pd
@@ -23,8 +23,9 @@ class BankCustomersData:
         clean_data = raw_data.assign(
             CARTE_CREDIT=lambda x: x.CARTE_CREDIT == "Yes",
             MEMBRE_ACTIF=lambda x: x.MEMBRE_ACTIF == "Yes",
-            CHURN=lambda x: x.CHURN == "Yes",
             SEXE=lambda x: x.SEXE == "F",
             DATE_ENTREE=pd.to_datetime(raw_data.DATE_ENTREE),
         )
+        if "CHURN" in raw_data.columns:
+            clean_data["CHURN"] = clean_data["CHURN"] == "Yes"
         return clean_data
