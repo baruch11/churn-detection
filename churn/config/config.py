@@ -41,7 +41,7 @@ def transform_to_object(file_path : os.path, path_of_models : str ,mapping_dict 
         model_list.append(model)
     return model_list
 
-def save_best_params_to_yaml (path : str ,best_params : tuple,model_name : str):
+def save_best_params_to_yaml (path : str ,best_params : tuple,model_name : str) -> bool:
     """This function save the result of a Bayesian search into a special file used by the train model. """
     model_to_save = dict()
     model_to_save["pipe__classifier"] = [model_name]
