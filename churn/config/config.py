@@ -23,19 +23,17 @@ def transform_to_object(file_path : os.path, path_of_models : str ,mapping_dict 
         grid_parameters = config
     model_list = list()
     for model in grid_parameters :
-        print(f"Model pipeline classifier : {grid_parameters}")
-        model["pipeline__classifier"][0] = mapping_dict[model["pipeline__classifier"][0]]
+        model["pipe__classifier"][0] = mapping_dict[model["pipe__classifier"][0]]
         model_list.append(model)
     return model_list
 
 def save_best_params_to_yaml (path : str ,best_params : tuple,model_name : str):
     """This function save the result of a Bayesian search into a special file used by the train model. """
     model_to_save = dict()
-    model_to_save["pipeline__classifier"] = [model_name]
-    print(f"best_params {best_params}")
+    model_to_save["pipe__classifier"] = [model_name]
     for param in best_params:
         # Skiping the result of pipeline__classifier, because this object coming from Bayesian search hasn't the right format. 
-        if param != "pipeline__classifier":
+        if param != "pipe__classifier":
             model_to_save[param] = best_params[param]
     model_to_save = {
         "model_parameters" : [model_to_save]
