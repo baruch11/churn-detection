@@ -10,6 +10,7 @@ class FeaturesDataset(TransformerMixin, BaseEstimator):
     """This class represents the features of the churn modelling."""
     features: pd.DataFrame = None
     balance_imputation: str = "median"
+    
 
     def __init__(self):
         self.imput_nan_salaire = None
