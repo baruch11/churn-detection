@@ -8,15 +8,16 @@ from sklearn.base import BaseEstimator
 @dataclass
 class FeaturesDataset(TransformerMixin, BaseEstimator):
     """This class represents the features of the churn modelling."""
+   
     features: pd.DataFrame = None
     balance_imputation: str = "median"
+    imput_nan_salaire = None
+    imput_nan_score_credit = None
+    imput_outliers_age = None
+    imput_nan_balance = None
+    imput_zero_balance = None
+        
 
-    def __init__(self):
-        self.imput_nan_salaire = None
-        self.imput_nan_score_credit = None
-        self.imput_outliers_age = None
-        self.imput_nan_balance = None
-        self.imput_zero_balance = None
         
     def fit(self, X:pd.DataFrame, y=None):
         
