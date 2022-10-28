@@ -1,9 +1,8 @@
 model_parameters:
 - pipe__classifier:
   - ExplainableBoostingClassifier()
-  pipe__classifier__binning: uniform
-  pipe__classifier__early_stopping_tolerance: 0.00010963290039949361
-  pipe__classifier__learning_rate: 0.1434084185090088
-  pipe__classifier__min_samples_leaf: 10
-  pipe__classifier__outer_bags: 3
-  pipe__features__balance_imputation: median
+  pipe__classifier__binning: quantile
+  pipe__classifier__early_stopping_tolerance: 0.02221505021259071
+  pipe__classifier__learning_rate: 0.23593931310511077
+  pipe__classifier__min_samples_leaf: 6
+  pipe__classifier__outer_bags: 10
