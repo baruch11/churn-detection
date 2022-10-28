@@ -2,7 +2,6 @@ import os
 from abc import ABC, ABCMeta, abstractmethod
 from xmlrpc.client import Boolean
 import pandas as pd
-from sklearn.pipeline import Pipeline
 import pickle
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.pipeline import Pipeline
@@ -123,8 +122,8 @@ class ChurnModelFinal(BaseChurnModel):
         )
 
 class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
-    def __init__(self,pipeline : Pipeline):
-        self.pipeline = pipeline
+    def __init__(self,pipe : Pipeline):
+        self.pipe = pipe
     def fit(self,X : pd.DataFrame, y : pd.DataFrame):
 
         """Build the models of the given pipeline from the training set (X, y).
@@ -137,18 +136,32 @@ class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
         y : array-like of shape (n_samples,) or (n_samples, n_outputs)
             The target values (class labels) as integers or strings.
         """
-        print(f"Pipeline Get params : {self.pipeline. get_params(deep=True)}")
         
-        #fds = FeaturesDataset(balance_imputation=self.balance_imputation)
-        #X,y = fds.compute_features(X),fds.compute_features(y)
-        self.pipeline.fit(X,y)
-        #X, y = check_X_y(X, y, accept_sparse=True)
-        #X, y = check_X_y(X, y)
+        self.pipe.fit(X,y)
         return self
     def score(self,X,y):
-        score = self.pipeline.score(X,y)
+        score = self.pipe.score(X,y)
         return  score
     def predict(self,X):
-        y_hat = self.pipeline.predict(X)
-        #check_is_fitted(self)
-        return y_hat
+        return pd.Series(
+            self.pipe.predict(X),
+            index = X.index
+        )
+    def score_details(self, X_test, y_test):
+        """Return a dataframe with multiple metrics 
+        Returns
+        -------
+           pd.Dataframe: columns: metrics
+        """
+        m_test = pd.concat([X_test,
+                            self.predict(X_test).rename("pred"),
+                            y_test], axis=1)
+
+        def _my_scores(df):
+            metrics = [accuracy_score, f1_score, precision_score, recall_score]
+            ret = {metric.__name__: metric(df.CHURN, df.pred)
+                   for metric in metrics}
+            return pd.Series(ret)
+        score_total = pd.DataFrame(
+            [_my_scores(m_test).to_dict()]).rename(index={0: "global"})
+        return score_total
