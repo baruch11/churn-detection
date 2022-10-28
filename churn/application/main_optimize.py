@@ -26,7 +26,7 @@ parser.add_argument("-m", "--models",
 parser.add_argument("-b", "--BayesSearchCV", type=str,
                     help="Compute a BayesSearchCV for a specific model with all parameters defined in the config file.")
 parser.add_argument("-n", "--n_iter", type=str,
-                    help="(Work only for GridSearchModel) : Number of parameter settings that are sampled. n_iter trades off runtime vs quality of the solution. Default is 5",
+                    help="(Work only for BayesSearchCV) : Number of parameter settings that are sampled. n_iter trades off runtime vs quality of the solution. Default is 5",
                     default=5)
 parser.add_argument('--debug', '-d', action='store_true',
                     help='activate debug logs')
@@ -36,10 +36,6 @@ logging.getLogger().setLevel(logging.INFO)
 if args.debug:
     logging.getLogger().setLevel(logging.DEBUG)
 
-
-bcd = BankCustomersData(CONFIG_DATA_INDICATORS, CONFIG_DATA_CUSTOMERS)
-raw_data = bcd.load_data()
-feature = FeaturesDataset().transform(raw_data)
 
 logging.debug("Loading data...")
 X_train, X_test, y_train, y_test = get_train_test_split()
@@ -59,7 +55,7 @@ if args.models:
 
 #If the user want to commpute a Bayesian Search Optimization for a specific model
 if args.BayesSearchCV:
-    model_parameters = find_model_params_from_model_name(all_models_param,model_name=args.GridSearchModel)
+    model_parameters = find_model_params_from_model_name(all_models_param,model_name=args.BayesSearchCV)
     classifier = model_parameters["pipe__classifier"][0]      
     logging.info(f"Computing BayesSearchCV for model :\n {classifier}")
     logging.debug(f"Model parameters are :\n {model_parameters}")
