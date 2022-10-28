@@ -17,8 +17,6 @@ class FeaturesDataset(TransformerMixin, BaseEstimator):
     imput_nan_balance = None
     imput_zero_balance = None
         
-
-        
     def fit(self, X:pd.DataFrame, y=None):
         
         assert self.balance_imputation in {"median", "mean", "none"}
