@@ -69,26 +69,25 @@ X_train, X_test, y_train, y_test = train_test_split(feature.drop(columns=["CHURN
 if args.models:
     for model_classifier in all_models:
         print(f"Modèle en cours d'entrainement : {model_classifier}")
-        model = ChurnModelSelection(pipeline=Pipeline([('scaler', StandardScaler()),('classifier', model_classifier)]))
+        model = ChurnModelSelection(pipe=Pipeline([('scaler', StandardScaler()),('classifier', model_classifier)]))
         param = {}
         clf = GridSearchCV(model,param_grid=param)
         clf.fit(X_train,y_train)
-        print(clf.best_score_)
+        print(clf.best_estimator_.score_details(X_test,y_test))
 
 #If the user want to commpute a Bayesian Search Optimization for a specific model
 if args.GridSearchModel:
     model_parameters = find_model_params_from_model_name(all_models_param,model_name=args.GridSearchModel)
     print("model parameters : \n",model_parameters)
-    classifier = model_parameters["pipeline__classifier"][0]      
-    model = ChurnModelSelection(pipeline=Pipeline([ ('scaler', StandardScaler()),('classifier', classifier)]))
+    classifier = model_parameters["pipe__classifier"][0]      
+    model = ChurnModelSelection(pipe=Pipeline([ ('scaler', StandardScaler()),('classifier', classifier)]))
     
     opt = BayesSearchCV(
         model,
         [(model_parameters, int(args.n_iter))],
         cv=5 )
     opt.fit(X_train, y_train)
-    print("val. score: %s" % opt.best_score_)
-    print("test score: %s" % opt.score(X_test, y_test))
+    print(opt.best_estimator_.score_details(X_test,y_test))
     print(f"best params : {opt.best_params_}")
     save_best_params_to_yaml(path="churn/config/latest_model.yml",best_params=opt.best_params_,model_name=f"{classifier.__class__.__name__}()")
 
