@@ -147,21 +147,3 @@ class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
             self.pipe.predict(X),
             index = X.index
         )
-    def score_details(self, X_test, y_test):
-        """Return a dataframe with multiple metrics 
-        Returns
-        -------
-           pd.Dataframe: columns: metrics
-        """
-        m_test = pd.concat([X_test,
-                            self.predict(X_test).rename("pred"),
-                            y_test], axis=1)
-
-        def _my_scores(df):
-            metrics = [accuracy_score, f1_score, precision_score, recall_score]
-            ret = {metric.__name__: metric(df.CHURN, df.pred)
-                   for metric in metrics}
-            return pd.Series(ret)
-        score_total = pd.DataFrame(
-            [_my_scores(m_test).to_dict()]).rename(index={0: "global"})
-        return score_total
