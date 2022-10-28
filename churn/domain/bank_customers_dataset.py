@@ -16,7 +16,9 @@ class FeaturesDataset(TransformerMixin, BaseEstimator):
     imput_outliers_age = None
     imput_nan_balance = None
     imput_zero_balance = None
-        
+    land_encoder = OneHotEncoder(handle_unknown='ignore')
+
+
     def fit(self, X:pd.DataFrame, y=None):
         
         assert self.balance_imputation in {"median", "mean", "none"}
@@ -34,7 +36,8 @@ class FeaturesDataset(TransformerMixin, BaseEstimator):
         if self.balance_imputation == "mean":
             self.imput_zero_balance = X.loc[~zeros_pos, "BALANCE"].mean()
 
-        
+        self.land_encoder.fit(X[["PAYS"]])
+
         return self
 
     def transform(self, X_processed:pd.DataFrame, y=None) -> pd.DataFrame:
@@ -69,11 +72,9 @@ class FeaturesDataset(TransformerMixin, BaseEstimator):
     #ENCODING
     def _encode_lands(self):
         """Onehot encoding of 'PAYS' feature."""
-        enc = OneHotEncoder(handle_unknown='ignore')
-        enc.fit(self.features[["PAYS"]])
         oh_pays = pd.DataFrame(
-            enc.transform(self.features[["PAYS"]]).todense(),
-            columns=enc.categories_[0],
+            self.land_encoder.transform(self.features[["PAYS"]]).todense(),
+            columns=self.land_encoder.categories_[0],
             index=self.features.index).astype(bool)
         self.features = self.features.drop(columns="PAYS")\
                                      .join(oh_pays)
