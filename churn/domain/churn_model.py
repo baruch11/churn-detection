@@ -1,18 +1,19 @@
+"""Model for churn detection"""
 import os
-from abc import ABC, ABCMeta, abstractmethod
+import pickle
+
+from abc import ABCMeta, abstractmethod
 from xmlrpc.client import Boolean
 import pandas as pd
-import pickle
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.pipeline import Pipeline
-
-from churn.domain.bank_customers_dataset import FeaturesDataset
-from sklearn.linear_model import LinearRegression
-from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import (accuracy_score, f1_score, recall_score,
                              precision_score)
+
 from churn.domain.bank_customers_dataset import FeaturesDataset
+
 
 
 class BaseChurnModel(metaclass=ABCMeta):
@@ -23,19 +24,24 @@ class BaseChurnModel(metaclass=ABCMeta):
     PICKLE_ROOT = "data/models"
 
     @abstractmethod
-    def fit(self):
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        """Fit the model from the training set (X, y)."""
         raise NotImplementedError
+
     @abstractmethod
-    def predict(self):
+    def predict(self, X: pd.DataFrame):
+        """Return predictions."""
         raise NotImplementedError
 
     @classmethod
-    def load(self) -> Boolean:
-        src_dir = os.path.join(self.PICKLE_ROOT, self.__name__) + ".pkl"
+    def load(cls) -> Boolean:
+        """Load the churn model from the class instance name."""
+        src_dir = os.path.join(cls.PICKLE_ROOT, cls.__name__) + ".pkl"
         with open(src_dir, 'rb') as inp:
             return pickle.load(inp)
 
     def save(self) -> Boolean:
+        """Save the model (pkl format)."""
         with open(self._get_pickle_path(), 'wb') as outp:
             pickle.dump(self, outp, pickle.HIGHEST_PROTOCOL)
         return True
@@ -73,14 +79,13 @@ class BaseChurnModel(metaclass=ABCMeta):
         return pd.concat([score_total, scores_pays, scores_balance])
 
 
-
 class DummyChurnModel(BaseChurnModel):
-
+    """This class is a dummy model possibly used for a quick sanity check."""
     def __init__(self):
         self.clf = DecisionTreeClassifier()
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
-        """Build the models of the given pipeline from the training set (X, y).
+        """Fit the model from the training set (X, y).
 
         Parameters
         ----------
@@ -93,19 +98,18 @@ class DummyChurnModel(BaseChurnModel):
         self.clf.fit(self._feature_engineering(X), y)
 
     def predict(self, X: pd.DataFrame):
+        """Return predictions."""
         return pd.Series(
             self.clf.predict(self._feature_engineering(X)),
-            index = X.index
+            index=X.index
         )
-
 
     def _feature_engineering(self, X):
         return X[["AGE"]]
 
 
-
 class ChurnModelFinal(BaseChurnModel):
-
+    """This class represents the final model for churn detection."""
     def __init__(self, _max_depth=5):
         self.pipe = Pipeline([
             ('features', FeaturesDataset()),
@@ -113,19 +117,44 @@ class ChurnModelFinal(BaseChurnModel):
         ])
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
+        """Fit the model from the training set (X, y).
+
+        Parameters
+        ----------
+        X : DataFrame of shape (n_samples, n_features)
+            The training input samples taken from raw data (infrastructure output).
+
+        y : array-like of shape (n_samples,1)
+            The target values (class labels) of booleans (churn or not churn).
+        """
         self.pipe.fit(X, y)
+        return self
 
     def predict(self, X: pd.DataFrame):
+        """Make predictions.
+
+        Parameters
+        ----------
+        X : DataFrame of shape (n_samples, n_features)
+            The training input samples taken from raw data (infrastructure output).
+
+        Returns
+        -------
+        y : pd.Series(boolean) of length n_samples, indexed like X
+            result of the model prediction(churn or not churn).
+        """
         return pd.Series(
             self.pipe.predict(X),
-            index = X.index
+            index=X.index
         )
 
-class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
-    def __init__(self,pipe : Pipeline):
-        self.pipe = pipe
-    def fit(self,X : pd.DataFrame, y : pd.DataFrame):
 
+class ChurnModelSelection(BaseChurnModel, BaseEstimator, ClassifierMixin):
+    """This class is a customizable churnmodel used for hyperparameters optimization"""
+    def __init__(self, pipe: Pipeline):
+        self.pipe = pipe
+
+    def fit(self, X: pd.DataFrame, y: pd.DataFrame):
         """Build the models of the given pipeline from the training set (X, y).
 
         Parameters
@@ -136,14 +165,16 @@ class ChurnModelSelection(BaseChurnModel,BaseEstimator, ClassifierMixin):
         y : array-like of shape (n_samples,) or (n_samples, n_outputs)
             The target values (class labels) as integers or strings.
         """
-        
-        self.pipe.fit(X,y)
+
+        self.pipe.fit(X, y)
         return self
-    def score(self,X,y):
-        score = self.pipe.score(X,y)
-        return  score
-    def predict(self,X):
+
+    def score(self, X, y, sample_weight=None):
+        score = self.pipe.score(X, y)
+        return score
+
+    def predict(self, X):
         return pd.Series(
             self.pipe.predict(X),
-            index = X.index
+            index=X.index
         )
