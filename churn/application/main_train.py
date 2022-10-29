@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from churn.domain.churn_model import ChurnModelFinal
 from churn.domain.domain_utils import get_train_test_split
+from churn.config.config import retrieve_optimal_parameters
+
 
 
 PARSER = argparse.ArgumentParser(
@@ -16,9 +18,12 @@ args = PARSER.parse_args()
 
 X_train, X_test, y_train, y_test = get_train_test_split()
 
-#training du modèle à partir de la classe DummyChurnModel
-# du module /domain/churn_model.py
+#Retrieve best_params dict of the chosen model
+best_params = retrieve_optimal_parameters()[1]
+
+#Model training based on optimal hyperparameters obtained in main_optimize
 model = ChurnModelFinal()
+model.pipe.set_params(**best_params)
 model.fit(X_train, y_train)
 y_pred_test = model.predict(X_test)
 y_pred_train = model.predict(X_train)
