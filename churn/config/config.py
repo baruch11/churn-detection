@@ -6,6 +6,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.neural_network import MLPClassifier
 from interpret.glassbox import ExplainableBoostingClassifier
+from churn.domain.domain_utils import find_model_params_from_model_name
+
 
 
 MODELS_MAPPING_DICT={
@@ -55,3 +57,23 @@ def save_best_params_to_yaml (path : str ,best_params : tuple,model_name : str) 
     with open(path, 'w') as file:
         yaml.dump(model_to_save, file)
     return True
+
+def retrieve_optimal_parameters():
+
+    ROOTDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+    CONFIG = read_yaml(os.path.join(ROOTDIR, "churn/config/latest_model.yml"))
+    model_final_params_list = transform_to_object("churn/config/latest_model.yml","model_parameters")
+    model_final_params_dict = find_model_params_from_model_name(model_final_params_list, model_name="ExplainableBoostingClassifier()")
+    #Retrieving First Parameter of yaml file which is the chosen model
+    model_final = list(model_final_params_dict.values())[0][0]
+    #Retrieving Last Parameter of yaml file which is the method chosen for balance imputation
+    balance_imputation = list(model_final_params_dict.values())[-1]
+    #Deleting these params from dict, to only keep hyperparameters
+    model_final_params_dict.pop('pipe__classifier', None)
+    model_final_params_dict.pop('pipe__features__balance_imputation', None)
+    #Renaming dict keys the right way to use .set_params() method
+    model_final_params_dict = {x.replace('pipe__classifier', 'clf'): v 
+     for x, v in model_final_params_dict.items()}
+
+    return model_final, model_final_params_dict, balance_imputation
+
