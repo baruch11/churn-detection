@@ -6,6 +6,7 @@ from abc import ABCMeta, abstractmethod
 from xmlrpc.client import Boolean
 import pandas as pd
 
+from interpret.glassbox import ExplainableBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -13,6 +14,8 @@ from sklearn.metrics import (accuracy_score, f1_score, recall_score,
                              precision_score)
 
 from churn.domain.bank_customers_dataset import FeaturesDataset
+from churn.config.config import read_yaml, transform_to_object
+from churn.domain.domain_utils import find_model_params_from_model_name
 
 
 
@@ -111,9 +114,14 @@ class DummyChurnModel(BaseChurnModel):
 class ChurnModelFinal(BaseChurnModel):
     """This class represents the final model for churn detection."""
     def __init__(self, _max_depth=5):
+        self._retrieve_optimal_parameters()
         self.pipe = Pipeline([
             ('features', FeaturesDataset()),
-            ('clf', DecisionTreeClassifier(max_depth=_max_depth))
+            ('clf', ExplainableBoostingClassifier(binning=self.optimal_binning,
+             early_stopping_tolerance=self.optimal_early_stopping_tolerance,
+             learning_rate=self.optimal_learning_rate,
+              min_samples_leaf=self.optimal_min_samples_leaf, 
+              outer_bags= self.optimal_outer_bags))
         ])
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
@@ -148,6 +156,22 @@ class ChurnModelFinal(BaseChurnModel):
             index=X.index
         )
 
+    def _retrieve_optimal_parameters(self):
+
+        ROOTDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+        CONFIG = read_yaml(os.path.join(ROOTDIR, "churn/config/latest_model.yml"))
+        model_final_params_list = transform_to_object("churn/config/latest_model.yml","model_parameters")
+        model_final_params_dict = find_model_params_from_model_name(model_final_params_list, model_name="ExplainableBoostingClassifier()")
+        self.optimal_binning = model_final_params_dict["pipe__classifier__binning"]
+        self.optimal_early_stopping_tolerance = model_final_params_dict["pipe__classifier__early_stopping_tolerance"]
+        self.optimal_learning_rate = model_final_params_dict["pipe__classifier__learning_rate"]
+        self.optimal_min_samples_leaf = model_final_params_dict["pipe__classifier__min_samples_leaf"]
+        self.optimal_outer_bags = model_final_params_dict["pipe__classifier__outer_bags"]
+
+
+
+
+        
 
 class ChurnModelSelection(BaseChurnModel, BaseEstimator, ClassifierMixin):
     """This class is a customizable churnmodel used for hyperparameters optimization"""
