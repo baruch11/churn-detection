@@ -1,26 +1,57 @@
 """This module compute features for churn detection"""
 from dataclasses import dataclass
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.base import TransformerMixin
-from sklearn.base import BaseEstimator
+import numpy as np
+from sklearn.preprocessing import OneHotEncoder, FunctionTransformer
+from sklearn.base import TransformerMixin, BaseEstimator
+from sklearn.pipeline import Pipeline
+from sklearn.compose import make_column_transformer
+
+def FeaturesDataset(balance_imputation='median',
+                    balance_zero=True,
+                    drop_cols=["NOM", "DATE_ENTREE"]):
+    """This function return a preprocessing transformer for the churn model.
+    Parameters
+    ----------
+    balance_imputation (str): balance 0 imputation mode (none|mean|median)
+    balance_zero (bool): if True add a boolean column for BALANCE == 0
+    drop_cols (list of str): list of column to drop
+    """
+
+    land_encoder = OneHotEncoder(handle_unknown='ignore', dtype=np.float64)
+    return Pipeline(
+        steps=[('imputer',
+                FeaturesImputer(balance_imputation=balance_imputation,
+                                balance_zero=balance_zero)),
+               ('col_transform', make_column_transformer(
+                   (land_encoder, ["PAYS"]),
+                   ("drop", drop_cols),
+                   remainder='passthrough'))
+               ]
+        )
 
 
 @dataclass
-class FeaturesDataset(TransformerMixin, BaseEstimator):
-    """This class represents the features of the churn modelling."""
+class FeaturesImputer(TransformerMixin, BaseEstimator):
+    """This class is an imputer for missing datas or outliers.
+    Parameters
+    ----------
+    balance_imputation (str): balance 0 imputation mode (none|mean|median)
+    balance_zero (bool): if True add a boolean column for BALANCE == 0
+    """
 
-    features: pd.DataFrame = None
     balance_imputation: str = "median"
+    balance_zero: bool = False
+   
     imput_nan_salaire = None
     imput_nan_score_credit = None
     imput_outliers_age = None
     imput_nan_balance = None
     imput_zero_balance = None
-    land_encoder = OneHotEncoder(handle_unknown='ignore')
+    feature_names = None
 
     def fit(self, X: pd.DataFrame, y=None):
-        """Fit the feature engineering transformer.
+        """Fit the imputation transformer.
         Parameters
         ----------
         X (pd.DataFrame): raw data output of
@@ -42,7 +73,9 @@ class FeaturesDataset(TransformerMixin, BaseEstimator):
         if self.balance_imputation == "mean":
             self.imput_zero_balance = X.loc[~zeros_pos, "BALANCE"].mean()
 
-        self.land_encoder.fit(X[["PAYS"]])
+        self.feature_names = list(X.columns)
+        if self.balance_zero:
+            self.feature_names.append("balance_zero")
 
         return self
 
@@ -58,35 +91,24 @@ class FeaturesDataset(TransformerMixin, BaseEstimator):
         features (pd.DataFrame): features matrix
         """
 
-        assert self.balance_imputation in {"median", "mean", "none"}
+        features = raw_data
 
-        self.features = raw_data.drop(columns=["NOM"])\
-            .assign(NUM_DAYS=raw_data.DATE_ENTREE.apply(
-                lambda x: (raw_data.DATE_ENTREE.max()-x).days))\
-            .assign(DAY_OF_YEAR=raw_data.DATE_ENTREE.dt.dayofyear)\
-            .drop(columns=["DATE_ENTREE"])
+        outliers_pos = features["AGE"] > 100
+        zeros_pos = features["BALANCE"] == 0
 
-        outliers_pos = self.features["AGE"] > 100
-        zeros_pos = self.features["BALANCE"] == 0
-
-        self._encode_lands()
-        self.features["SALAIRE"].fillna(self.imput_nan_salaire, inplace=True)
-        self.features["SCORE_CREDIT"].fillna(
+        features["SALAIRE"].fillna(self.imput_nan_salaire, inplace=True)
+        features["SCORE_CREDIT"].fillna(
             self.imput_nan_score_credit, inplace=True)
-        self.features["BALANCE"].fillna(self.imput_nan_balance, inplace=True)
-        self.features.loc[outliers_pos, "AGE"] = self.imput_outliers_age
+        features["BALANCE"].fillna(self.imput_nan_balance, inplace=True)
+        features.loc[outliers_pos, "AGE"] = self.imput_outliers_age
         if self.balance_imputation != "none":
-            self.features.loc[zeros_pos, "BALANCE"] = self.imput_zero_balance
+            features.loc[zeros_pos, "BALANCE"] = self.imput_zero_balance
 
-        return self.features
+        if self.balance_zero:
+            features['balance_zero'] = zeros_pos
 
-    # ENCODING
+        return features
 
-    def _encode_lands(self):
-        """Onehot encoding of 'PAYS' feature."""
-        oh_pays = pd.DataFrame(
-            self.land_encoder.transform(self.features[["PAYS"]]).todense(),
-            columns=self.land_encoder.categories_[0],
-            index=self.features.index).astype(bool)
-        self.features = self.features.drop(columns="PAYS")\
-                                     .join(oh_pays)
+
+    def get_feature_names_out(self, input_features=None):
+        return self.feature_names
