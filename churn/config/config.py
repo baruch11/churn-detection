@@ -59,7 +59,7 @@ def save_best_params_to_yaml (path : str ,best_params : tuple,model_name : str) 
     return True
 
 def retrieve_optimal_parameters():
-
+    """Retrieve optimal parameters from main_optimize"""
     ROOTDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
     CONFIG = read_yaml(os.path.join(ROOTDIR, "churn/config/latest_model.yml"))
     model_final_params_list = transform_to_object("churn/config/latest_model.yml","model_parameters")
@@ -67,13 +67,10 @@ def retrieve_optimal_parameters():
     #Retrieving First Parameter of yaml file which is the chosen model
     model_final = list(model_final_params_dict.values())[0][0]
     #Retrieving Last Parameter of yaml file which is the method chosen for balance imputation
-    balance_imputation = list(model_final_params_dict.values())[-1]
     #Deleting these params from dict, to only keep hyperparameters
     model_final_params_dict.pop('pipe__classifier', None)
-    model_final_params_dict.pop('pipe__features__balance_imputation', None)
-    #Renaming dict keys the right way to use .set_params() method
-    model_final_params_dict = {x.replace('pipe__classifier', 'clf'): v 
-     for x, v in model_final_params_dict.items()}
-
-    return model_final, model_final_params_dict, balance_imputation
+    # remove pipe__ prefix
+    model_final_params_dict = {x.lstrip('pipe__'): v
+                               for x, v in model_final_params_dict.items()}
+    return model_final, model_final_params_dict
 
