@@ -6,4 +6,4 @@ model_parameters:
   pipe__classifier__learning_rate: 0.011234030199095161
   pipe__classifier__min_samples_leaf: 2
   pipe__classifier__outer_bags: 6
-  pipe__features__balance_imputation: none
+  pipe__features__imputer__balance_imputation: none
