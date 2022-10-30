@@ -91,7 +91,7 @@ class FeaturesImputer(TransformerMixin, BaseEstimator):
         features (pd.DataFrame): features matrix
         """
 
-        features = raw_data
+        features = raw_data.copy()
 
         outliers_pos = features["AGE"] > 100
         zeros_pos = features["BALANCE"] == 0
