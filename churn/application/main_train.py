@@ -1,24 +1,37 @@
 """Compute training from a csv file"""
 
-import argparse
 import os
+import logging
+import argparse
+
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
 from churn.domain.churn_model import ChurnModelFinal
 from churn.domain.domain_utils import get_train_test_split
+from churn.config.config import retrieve_optimal_parameters
 
 
+logging.getLogger().setLevel(logging.INFO)
 PARSER = argparse.ArgumentParser(
     description='Compute training from a csv file')
+PARSER.add_argument('--debug', '-d', action='store_true',
+                    help='activate debug logs')
 
 args = PARSER.parse_args()
 
+if args.debug:
+    logging.getLogger().setLevel(logging.DEBUG)
+
 X_train, X_test, y_train, y_test = get_train_test_split()
 
-#training du modèle à partir de la classe DummyChurnModel
-# du module /domain/churn_model.py
+#Retrieve best_params dict of the chosen model
+_, best_params = retrieve_optimal_parameters()
+logging.debug("best params:\n%s", best_params)
+
+#Model training based on optimal hyperparameters obtained in main_optimize
 model = ChurnModelFinal()
+model.pipe.set_params(**best_params)
 model.fit(X_train, y_train)
 y_pred_test = model.predict(X_test)
 y_pred_train = model.predict(X_train)

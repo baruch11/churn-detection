@@ -11,6 +11,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import (accuracy_score, f1_score, recall_score,
                              precision_score)
+from interpret.glassbox import ExplainableBoostingClassifier
 
 from churn.domain.bank_customers_dataset import FeaturesDataset
 
@@ -108,12 +109,13 @@ class DummyChurnModel(BaseChurnModel):
         return X[["AGE"]]
 
 
-class ChurnModelFinal(BaseChurnModel):
+class ChurnModelFinal(BaseChurnModel, BaseEstimator):
     """This class represents the final model for churn detection."""
-    def __init__(self, _max_depth=5):
+    def __init__(self):
+
         self.pipe = Pipeline([
             ('features', FeaturesDataset()),
-            ('clf', DecisionTreeClassifier(max_depth=_max_depth))
+            ('classifier', ExplainableBoostingClassifier())
         ])
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
