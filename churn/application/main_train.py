@@ -19,7 +19,7 @@ args = PARSER.parse_args()
 X_train, X_test, y_train, y_test = get_train_test_split()
 
 #Retrieve best_params dict of the chosen model
-best_params = retrieve_optimal_parameters()[1]
+_, best_params = retrieve_optimal_parameters()
 
 #Model training based on optimal hyperparameters obtained in main_optimize
 model = ChurnModelFinal()

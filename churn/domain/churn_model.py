@@ -11,9 +11,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import (accuracy_score, f1_score, recall_score,
                              precision_score)
+from interpret.glassbox import ExplainableBoostingClassifier
 
 from churn.domain.bank_customers_dataset import FeaturesDataset
-from churn.config.config import retrieve_optimal_parameters
 
 
 
@@ -112,12 +112,12 @@ class DummyChurnModel(BaseChurnModel):
 class ChurnModelFinal(BaseChurnModel, BaseEstimator):
     """This class represents the final model for churn detection."""
     def __init__(self):
-        self._accessing_optimal_model()
+
         self.pipe = Pipeline([
             ('features', FeaturesDataset()),
-            ('clf', self.model_final)
+            ('classifier', ExplainableBoostingClassifier())
         ])
-        
+
     def fit(self, X: pd.DataFrame, y: pd.Series):
         """Fit the model from the training set (X, y).
 
@@ -150,13 +150,6 @@ class ChurnModelFinal(BaseChurnModel, BaseEstimator):
             index=X.index
         )
 
-    def _accessing_optimal_model(self):
-        #Access the chosen model
-        self.model_final = retrieve_optimal_parameters()[0]
-
-
-
-        
 
 class ChurnModelSelection(BaseChurnModel, BaseEstimator, ClassifierMixin):
     """This class is a customizable churnmodel used for hyperparameters optimization"""
