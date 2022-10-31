@@ -1,7 +1,7 @@
 """functions related to domain"""
 import opcode
 import os
-from turtle import right
+
 import yaml
 
 from sklearn.model_selection import train_test_split
