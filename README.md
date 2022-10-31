@@ -36,7 +36,7 @@ If you wish to train it with a new dataset (2 csv files containing customers and
 	python3 churn/application/main_train.py
 
 
-## Optimization process
+## Bayesian Optimization process
 
 The model and its hyper-parameters have been chosen with the main_optimize.py script.
 
@@ -50,7 +50,7 @@ Return scores of each of the model with default params
 
 #### Find best params for a specific model :
 <code>python3 churn/application/main_optimize.py -g "SVC() -n 10"</code>
-Return score and best params for the trained and test model
+Return score and best params performing Bayes optimization for the trained and test model.
 Save the config automatically. 
 
 
