@@ -1,6 +1,6 @@
 """Compute training from a csv file"""
 
-import os
+import sys
 import logging
 import argparse
 
@@ -24,7 +24,15 @@ args = PARSER.parse_args()
 if args.debug:
     logging.getLogger().setLevel(logging.DEBUG)
 
-X_train, X_test, y_train, y_test = get_train_test_split()
+try:
+    X_train, X_test, y_train, y_test = get_train_test_split()
+except FileNotFoundError as emsg:
+    print(emsg)
+    logging.error("%s", emsg)
+    logging.info("Import and copy the train dataset (1_-_indicators.csv and "
+                 "1_-_customers.csv) to churn/data/")
+    sys.exit(1)
+
 latest_best_params = transform_to_object("churn/config/latest_model.yml","model_parameters")[0]
 model_name = latest_best_params["pipe__classifier"][0]
 #Removing model name for the set_params command
