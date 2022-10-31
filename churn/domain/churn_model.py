@@ -14,7 +14,7 @@ from sklearn.metrics import (accuracy_score, f1_score, recall_score,
 from interpret.glassbox import ExplainableBoostingClassifier
 
 from churn.domain.bank_customers_dataset import FeaturesDataset
-
+from churn.config.config import retrieve_optimal_parameters
 
 
 class BaseChurnModel(metaclass=ABCMeta):
@@ -111,12 +111,14 @@ class DummyChurnModel(BaseChurnModel):
 
 class ChurnModelFinal(BaseChurnModel, BaseEstimator):
     """This class represents the final model for churn detection."""
-    def __init__(self):
+    def __init__(self, feature_names=None):
 
         self.pipe = Pipeline([
             ('features', FeaturesDataset()),
-            ('classifier', ExplainableBoostingClassifier())
+            ('classifier', ExplainableBoostingClassifier(feature_names))
         ])
+        _, params = retrieve_optimal_parameters()
+        self.pipe.set_params(**params)
 
     def fit(self, X: pd.DataFrame, y: pd.Series):
         """Fit the model from the training set (X, y).
