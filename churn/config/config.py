@@ -62,7 +62,8 @@ def retrieve_optimal_parameters():
     """Retrieve optimal parameters from main_optimize"""
     ROOTDIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
     CONFIG = read_yaml(os.path.join(ROOTDIR, "churn/config/latest_model.yml"))
-    model_final_params_list = transform_to_object("churn/config/latest_model.yml","model_parameters")
+    model_final_params_list = transform_to_object(os.path.join(ROOTDIR, "churn/config/latest_model.yml"),
+                                                  "model_parameters")
     model_final_params_dict = find_model_params_from_model_name(model_final_params_list, model_name="ExplainableBoostingClassifier()")
     #Retrieving First Parameter of yaml file which is the chosen model
     model_final = list(model_final_params_dict.values())[0][0]
