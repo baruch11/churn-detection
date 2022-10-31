@@ -34,7 +34,7 @@ class BaseChurnModel(metaclass=ABCMeta):
         raise NotImplementedError
 
     @classmethod
-    def load(cls,) -> Boolean:
+    def load(cls) -> Boolean:
         """Load the churn model from the class instance name."""
         src_dir = os.path.join(get_rootdir(),  cls.PICKLE_ROOT, cls.__name__) + ".pkl"
         with open(src_dir, 'rb') as inp:
