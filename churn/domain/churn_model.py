@@ -1,7 +1,6 @@
 """Model for churn detection"""
 import os
 import pickle
-
 from abc import ABCMeta, abstractmethod
 from xmlrpc.client import Boolean
 import pandas as pd
@@ -12,7 +11,7 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import (accuracy_score, f1_score, recall_score,
                              precision_score)
 from interpret.glassbox import ExplainableBoostingClassifier
-
+from churn.domain.domain_utils import get_rootdir 
 from churn.domain.bank_customers_dataset import FeaturesDataset
 
 
@@ -35,9 +34,9 @@ class BaseChurnModel(metaclass=ABCMeta):
         raise NotImplementedError
 
     @classmethod
-    def load(cls) -> Boolean:
+    def load(cls,) -> Boolean:
         """Load the churn model from the class instance name."""
-        src_dir = os.path.join(cls.PICKLE_ROOT, cls.__name__) + ".pkl"
+        src_dir = os.path.join(get_rootdir(),  cls.PICKLE_ROOT, cls.__name__) + ".pkl"
         with open(src_dir, 'rb') as inp:
             return pickle.load(inp)
 
