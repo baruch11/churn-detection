@@ -6,7 +6,7 @@ import argparse
 
 
 from sklearn.metrics import accuracy_score, f1_score
-from churn.domain.churn_model import ChurnModelFinal
+from churn.domain.churn_model import ChurnModelFinal, retrieve_feature_names_out
 from churn.domain.domain_utils import get_train_test_split
 
 logging.getLogger().setLevel(logging.INFO)
@@ -34,7 +34,8 @@ except FileNotFoundError as emsg:
 X_train, X_test, y_train, y_test = get_train_test_split()
 
 #Model training based on optimal hyperparameters obtained in main_optimize
-model = ChurnModelFinal()
+feature_names = retrieve_feature_names_out(X_train)
+model = ChurnModelFinal(feature_names)
 model.fit(X_train, y_train)
 y_pred_test = model.predict(X_test)
 y_pred_train = model.predict(X_train)

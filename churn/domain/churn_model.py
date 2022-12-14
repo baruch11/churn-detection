@@ -108,7 +108,7 @@ class DummyChurnModel(BaseChurnModel):
         return X[["AGE"]]
 
 
-class ChurnModelFinal(BaseChurnModel, BaseEstimator):
+class ChurnModelFinal(BaseChurnModel):
     """This class represents the final model for churn detection."""
     def __init__(self, feature_names=None):
 
@@ -150,6 +150,24 @@ class ChurnModelFinal(BaseChurnModel, BaseEstimator):
             self.pipe.predict(X),
             index=X.index
         )
+
+
+def retrieve_feature_names_out(X_train):
+    """Retrieve feature_names for classifier interpretability
+    Returns
+    -------
+        feature_names (list of string)
+    """
+    _, params = retrieve_optimal_parameters()
+    prefix = "features__"  # the first step of the pipe name is 'features'
+    features_params = {param[len(prefix):]: value for param, value
+                       in params.items() if prefix in param}
+    feature_names = FeaturesDataset().set_params(**features_params)\
+                                     .fit(X_train).get_feature_names_out()
+    # remove some prefixes
+    feature_names = [feature.lstrip("remainder__").lstrip("onehotencoder__")
+                     for feature in feature_names]
+    return feature_names
 
 
 class ChurnModelSelection(BaseChurnModel, BaseEstimator, ClassifierMixin):
