@@ -6,13 +6,13 @@ The model detects churn from customers information such as 'BALANCE', 'NB_PRODUI
 
 ## Installation
 
-Clone the project and create a virtual environment with all the dependencies.
+Clone the project and create a virtual environment with all the dependencies with [poetry](https://python-poetry.org/docs).
 
 	git clone git@gitlab.com:yotta-academy/mle-bootcamp/projects/ml-project/project-1-fall-2022/churn-modelling-salima-charles-emeric.git
     cd churn-modelling-salima-charles-emeric/ 
-    python3 -m venv .venv  
-    source .venv/bin/activate
-    pip install -r requirements.txt
+	poetry config virtualenvs.in-project true --local
+	poetry install
+	source activate.sh
 
 ## Make inferences
 
