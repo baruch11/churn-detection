@@ -1,0 +1,14 @@
+
+stages:
+  - test
+  - build
+    
+unit-test:
+  image: python:3.9
+  stage: test
+  script:
+    - pip install poetry
+    - poetry config virtualenvs.in-project true --local
+    - poetry install
+    - source activate.sh
+

@@ -21,7 +21,7 @@ class BaseChurnModel(metaclass=ABCMeta):
     Interface of our ChurnModel
 
     """
-    PICKLE_ROOT = "data/models"
+    PICKLE_ROOT = "churn/domain/models"
 
     @abstractmethod
     def fit(self, X: pd.DataFrame, y: pd.Series):
