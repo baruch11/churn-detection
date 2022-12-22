@@ -3,7 +3,7 @@ from churn.domain.domain_utils import get_train_test_split
 
 import logging
 
-def test_split():
+def disable_test_split():
     X_train, X_test, y_train, y_test = get_train_test_split()
     # check if the split is stratified
     acceptance_thres = .02
