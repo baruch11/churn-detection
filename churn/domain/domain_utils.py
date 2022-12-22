@@ -40,7 +40,7 @@ def get_train_test_split():
 
     X_train, X_test, y_train, y_test = train_test_split(
         raw_data.drop(columns=["CHURN"]),
-        raw_data["CHURN"],
+        raw_data["CHURN"] == "Yes",
         test_size=0.20,
         random_state=33)
 
