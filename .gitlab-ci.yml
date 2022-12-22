@@ -11,4 +11,5 @@ unit-test:
     - poetry config virtualenvs.in-project true --local
     - poetry install
     - source activate.sh
+    - pytest
 
