@@ -150,6 +150,25 @@ class ChurnModelFinal(BaseChurnModel):
             self.pipe.predict(X),
             index=X.index
         )
+        
+    def predict_proba(self, X: pd.DataFrame):
+        """Make probability prediction estimate of sample for each class.
+
+        Parameters
+        ----------
+        X : DataFrame of shape (n_samples, n_features)
+            The training input samples taken from raw data (infrastructure output).
+
+        Returns
+        -------
+        y : pd.DataFrame(probabilities) of length n_samples, indexed like X
+            result of the model prediction. 
+            If the probability is close to 1 the customer certainly churns .
+        """
+        return pd.DataFrame(
+            self.pipe.predict_proba(X),
+            index=X.index
+        )
 
 
 def retrieve_feature_names_out(X_train):
