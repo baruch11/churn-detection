@@ -168,7 +168,7 @@ class ChurnModelFinal(BaseChurnModel):
         return pd.DataFrame(
             self.pipe.predict_proba(X),
             index=X.index
-        )
+        )[1]
 
 
 def retrieve_feature_names_out(X_train):
