@@ -9,7 +9,7 @@ from sklearn.compose import make_column_transformer
 
 def FeaturesDataset(balance_imputation='median',
                     balance_zero=True,
-                    drop_cols=["NOM", "DATE_ENTREE"]):
+                    ):
     """This function return a preprocessing transformer for the churn model.
     Parameters
     ----------
@@ -25,7 +25,6 @@ def FeaturesDataset(balance_imputation='median',
                                 balance_zero=balance_zero)),
                ('col_transform', make_column_transformer(
                    (land_encoder, ["PAYS"]),
-                   ("drop", drop_cols),
                    remainder='passthrough'))
                ]
         )
