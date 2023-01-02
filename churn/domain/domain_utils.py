@@ -3,7 +3,9 @@ import opcode
 import os
 
 import yaml
+import numpy as np
 import pandas as pd
+from imblearn.over_sampling import SMOTENC
 from sklearn.model_selection import train_test_split
 from churn.infrastructure.bank_customers import BankCustomersData
 
@@ -15,7 +17,7 @@ def get_rootdir():
         os.path.join(os.path.dirname(__file__), "../../"))
 
 
-def get_train_test_split(save_test=False):
+def get_train_test_split(save_test=False, resampling = True):
     """Return dataset split used in application
     the dataset files path is hard coded <rootdir>/churn/config
     Returns:
@@ -44,12 +46,28 @@ def get_train_test_split(save_test=False):
         test_size=0.20,
         random_state=33)
 
+    if resampling:
+
+        #Little Trick to resample our Dataset :
+        #As SMOTE method does not support NaN we replace it by an arbitrary value
+        #That does not appear in the initial distribution of BALANCE, SALAIRE & SCORE_CREDIT
+        #Replace NaN by -1
+        X_train.fillna(-1, inplace=True)
+
+        oversample = SMOTENC(categorical_features=[2, 5, 6, 7, 8, 10])
+        X_train, y_train = oversample.fit_resample(X_train, y_train)
+        #Replace the arbitrary value chosen before
+        X_train.replace(-1, np.NaN, inplace = True)
+        #DataFrame shape is (15846, 10)
+
+
+
+
     if save_test:
         pd.concat([X_test, y_test.rename("label")],
                   axis=1).to_csv(_test_set_path())
 
     return X_train, X_test, y_train, y_test
-
 
 def return_models_from_all_model_params(all_models_param : dict) -> list:
     """ Return all models for a list of param grid"""

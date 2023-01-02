@@ -14,6 +14,8 @@ PARSER = argparse.ArgumentParser(
     description='Compute training from a csv file')
 PARSER.add_argument('--debug', '-d', action='store_true',
                     help='activate debug logs')
+PARSER.add_argument('--smote', '-s', type=int, default=1,
+                    help='Resample training with SMOTE if 1')
 
 args = PARSER.parse_args()
 
@@ -30,8 +32,8 @@ except FileNotFoundError as emsg:
                  "1_-_customers.csv) to churn/data/")
     sys.exit(1)
 
-
-X_train, X_test, y_train, y_test = get_train_test_split()
+print(f"SMOTE is {args.smote == True}")
+X_train, X_test, y_train, y_test = get_train_test_split(resampling=args.smote)
 
 #Model training based on optimal hyperparameters obtained in main_optimize
 feature_names = retrieve_feature_names_out(X_train)
