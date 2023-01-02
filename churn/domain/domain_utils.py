@@ -40,35 +40,27 @@ def get_train_test_split(save_test=False, resampling = True):
     bcd = BankCustomersData(indicators_path, customers_path)
     raw_data = bcd.load_data()
 
+    X_train, X_test, y_train, y_test = train_test_split(
+        raw_data.drop(columns=["CHURN"]),
+        raw_data["CHURN"] == "Yes",
+        test_size=0.20,
+        random_state=33)
+
     if resampling:
 
         #Little Trick to resample our Dataset :
         #As SMOTE method does not support NaN we replace it by an arbitrary value
         #That does not appear in the initial distribution of BALANCE, SALAIRE & SCORE_CREDIT
         #Replace NaN by -1
-        raw_data.fillna(-1, inplace=True)
-        #Dropping DATE_ENTREE variable as
-        #Datetime type is not supported by resampling methods
-        #Also dropping NOM along as it is a useless one
-        X = raw_data.drop(columns=["CHURN", "NOM", "DATE_ENTREE"])
-        y = raw_data["CHURN"]
+        X_train.fillna(-1, inplace=True)
 
-        oversample = SMOTENC(categorical_features=[1, 2, 5, 6, 8])
-        X, y = oversample.fit_resample(X, y)
-        y = pd.DataFrame(y, columns = ["CHURN"]) 
-        raw_data = pd.concat([X,y], axis = 1)
+        oversample = SMOTENC(categorical_features=[2, 5, 6, 7, 8, 10])
+        X_train, y_train = oversample.fit_resample(X_train, y_train)
         #Replace the arbitrary value chosen before
-        raw_data.replace(-1, np.NaN, inplace = True)
+        X_train.replace(-1, np.NaN, inplace = True)
         #DataFrame shape is (15846, 10)
 
-    else: 
-        raw_data.drop(columns = ["NOM", "DATE_ENTREE"], inplace = True)
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        raw_data.drop(columns=["CHURN"]),
-        raw_data["CHURN"] == "Yes",
-        test_size=0.20,
-        random_state=33)
 
 
     if save_test:
