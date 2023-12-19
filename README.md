@@ -8,11 +8,11 @@ The model detects churn from customers information such as 'BALANCE', 'NB_PRODUI
 
 Clone the project and create a virtual environment with all the dependencies with [poetry](https://python-poetry.org/docs).
 
-	git clone git@gitlab.com:yotta-academy/mle-bootcamp/projects/ml-project/project-1-fall-2022/churn-modelling-salima-charles-emeric.git
-    cd churn-modelling-salima-charles-emeric/ 
-	poetry config virtualenvs.in-project true --local
-	poetry install
-	source activate.sh
+```
+poetry config virtualenvs.in-project true --local
+poetry install
+source activate.sh
+```
 
 ## Make inferences
 
@@ -31,10 +31,11 @@ The output file is a csv file (by default in _<rootdir>/data/predictions.csv_) w
 The model in the repository (<rootdir>/data/model/ChurnModelFinal.pkl) is already trained.   
 If you wish to train it with a new dataset (2 csv files containing customers and indicators), adapt _data_ field in <rootdir>/churn/config/config_template.yml and make the following steps:  
 
-	cd rootdir
-	source activate.sh
-	python3 churn/application/main_train.py
-
+```
+cd rootdir
+source activate.sh
+python3 churn/application/main_train.py
+```
 
 ## Bayesian Optimization process
 
